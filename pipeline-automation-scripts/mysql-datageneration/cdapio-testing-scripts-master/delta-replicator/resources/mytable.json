@@ -1,0 +1,109 @@
+{
+  "fields": [
+    {
+      "name": "FIELD0",
+      "type": "mediumtext",
+      "args": {
+      "size": max
+      }
+    },
+    {
+      "name": "FIELD1",
+      "type": "mediumtext",
+      "args": {
+      "size": max
+      }
+    },
+    {
+      "name": "FIELD2",
+      "type": "mediumtext",
+      "args": {
+      "size": max
+      }
+    },
+    {
+      "name": "FIELD3",
+      "type": "mediumtext",
+      "args": {
+      "size": max
+      }
+    },
+    {
+      "name": "FIELD4",
+      "type": "mediumtext",
+      "args": {
+      "size": max
+      }
+    },
+    {
+      "name": "FIELD5",
+      "type": "mediumtext",
+      "args": {
+      "size": max
+      }
+    },
+    {
+      "name": "FIELD6",
+      "type": "mediumtext",
+      "args": {
+      "size": max
+      }
+    },
+    {
+      "name": "FIELD7",
+      "type": "mediumtext",
+      "args": {
+      "size": max
+      }
+    },
+    {
+      "name": "FIELD8",
+      "type": "mediumtext",
+      "args": {
+      "size": max
+      }
+    },
+    {
+      "name": "FIELD9",
+      "type": "mediumtext",
+      "args": {
+      "size": max
+      }
+    },
+    {
+      "name": "FIELD10",
+      "type": "mediumtext",
+      "args": {
+      "size": max
+      }
+    },	
+    {
+      "name": "FIELD11",
+      "type": "mediumtext",
+      "args": {
+      "size": max
+      }
+    },	
+    {
+      "name": "FIELD12",
+      "type": "mediumtext",
+      "args": {
+      "size": max
+      }
+    },	
+    {
+      "name": "FIELD13",
+      "type": "mediumtext",
+      "args": {
+      "size": max
+      }
+    },	
+    {
+      "name": "FIELD14",
+      "type": "mediumtext",
+      "args": {
+      "size": max
+      }
+    }		
+  ]
+}

@@ -1,0 +1,178 @@
+{
+    "name": "sqlserver-to-bq_withtrans_1450splits",
+    "description": "Data Pipeline Application",
+    "artifact": {
+        "name": "cdap-data-pipeline",
+        "version": "6.2.2",
+        "scope": "SYSTEM"
+    },
+    "config": {
+        "stages": [
+            {
+                "name": "Database",
+                "plugin": {
+                    "name": "Database",
+                    "type": "batchsource",
+                    "label": "Database",
+                    "artifact": {
+                        "name": "database-plugins",
+                        "version": "2.4.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "jdbcPluginType": "jdbc",
+                        "enableAutoCommit": "false",
+                        "columnNameCase": "No change",
+                        "transactionIsolationLevel": "TRANSACTION_SERIALIZABLE",
+                        "referenceName": "source",
+                        "jdbcPluginName": "sqlserver42",
+                        "connectionString": "${connection_string}",
+                        "importQuery": "select * from lineitem where $CONDITIONS;",
+                        "user": "SA",
+                        "password": "sql-server1",
+                        "schema": "{\"type\":\"record\",\"name\":\"outputSchema\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"long\"},{\"name\":\"L_PARTKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_SUPPKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_LINENUMBER\",\"type\":\"int\"},{\"name\":\"L_QUANTITY\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_EXTENDEDPRICE\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_DISCOUNT\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_TAX\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_RETURNFLAG\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_LINESTATUS\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMITDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_RECEIPTDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPINSTRUCT\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPMODE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMENT\",\"type\":[\"string\",\"null\"]}]}",
+                        "boundingQuery": "select min(L_ORDERKEY), max(L_ORDERKEY) from lineitem;",
+                        "splitBy": "L_ORDERKEY",
+                        "fetchSize": "10000",
+                        "numSplits": "1450"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"type\":\"record\",\"name\":\"outputSchema\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"long\"},{\"name\":\"L_PARTKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_SUPPKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_LINENUMBER\",\"type\":\"int\"},{\"name\":\"L_QUANTITY\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_EXTENDEDPRICE\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_DISCOUNT\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_TAX\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_RETURNFLAG\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_LINESTATUS\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMITDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_RECEIPTDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPINSTRUCT\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPMODE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMENT\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "id": "Database",
+                "type": "batchsource",
+                "label": "Database",
+                "icon": "icon-database",
+                "$$hashKey": "object:1139",
+                "isPluginAvailable": true,
+                "_uiPosition": {
+                    "left": "560px",
+                    "top": "314.5px"
+                }
+            },
+            {
+                "name": "Wrangler",
+                "plugin": {
+                    "name": "Wrangler",
+                    "type": "transform",
+                    "label": "Wrangler",
+                    "artifact": {
+                        "name": "wrangler-transform",
+                        "version": "4.2.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "field": "*",
+                        "precondition": "false",
+                        "threshold": "1",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"long\"},{\"name\":\"L_PARTKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_SUPPKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_LINENUMBER\",\"type\":\"int\"},{\"name\":\"L_QUANTITY\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_EXTENDEDPRICE\",\"type\":[\"float\",\"null\"]},{\"name\":\"L_DISCOUNT\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_TAX\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_RETURNFLAG\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_LINESTATUS\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMITDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_RECEIPTDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPINSTRUCT\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPMODE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMENT\",\"type\":[\"string\",\"null\"]}]}",
+                        "directives": "parse-as-simple-date :L_SHIPDATE yyyy-MM-dd\nparse-as-simple-date :L_COMMITDATE yyyy-MM-dd\nfill-null-or-empty :L_LINESTATUS 'X'\nfind-and-replace L_RETURNFLAG s/^N$/Y/g\nset-type :L_EXTENDEDPRICE float"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"long\"},{\"name\":\"L_PARTKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_SUPPKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_LINENUMBER\",\"type\":\"int\"},{\"name\":\"L_QUANTITY\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_EXTENDEDPRICE\",\"type\":[\"float\",\"null\"]},{\"name\":\"L_DISCOUNT\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_TAX\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_RETURNFLAG\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_LINESTATUS\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMITDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_RECEIPTDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPINSTRUCT\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPMODE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMENT\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "inputSchema": [
+                    {
+                        "name": "Database",
+                        "schema": "{\"type\":\"record\",\"name\":\"outputSchema\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"long\"},{\"name\":\"L_PARTKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_SUPPKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_LINENUMBER\",\"type\":\"int\"},{\"name\":\"L_QUANTITY\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_EXTENDEDPRICE\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_DISCOUNT\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_TAX\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_RETURNFLAG\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_LINESTATUS\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMITDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_RECEIPTDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPINSTRUCT\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPMODE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMENT\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "id": "Wrangler",
+                "type": "transform",
+                "label": "Wrangler",
+                "icon": "icon-DataPreparation",
+                "$$hashKey": "object:1140",
+                "isPluginAvailable": true,
+                "_uiPosition": {
+                    "left": "860px",
+                    "top": "314.5px"
+                }
+            },
+            {
+                "name": "BigQuery",
+                "plugin": {
+                    "name": "BigQueryTable",
+                    "type": "batchsink",
+                    "label": "BigQuery",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.15.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "project": "auto-detect",
+                        "serviceFilePath": "auto-detect",
+                        "operation": "insert",
+                        "truncateTable": "false",
+                        "allowSchemaRelaxation": "false",
+                        "location": "US",
+                        "createPartitionedTable": "false",
+                        "partitionFilterRequired": "false",
+                        "schema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"long\"},{\"name\":\"L_PARTKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_SUPPKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_LINENUMBER\",\"type\":\"int\"},{\"name\":\"L_QUANTITY\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_EXTENDEDPRICE\",\"type\":[\"float\",\"null\"]},{\"name\":\"L_DISCOUNT\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_TAX\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_RETURNFLAG\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_LINESTATUS\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMITDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_RECEIPTDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPINSTRUCT\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPMODE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMENT\",\"type\":[\"string\",\"null\"]}]}",
+                        "referenceName": "bqsink",
+                        "dataset": "sqlserver_db",
+                        "table": "Lineitem"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"name\":\"etlSchemaBody\",\"type\":\"record\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"long\"},{\"name\":\"L_PARTKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_SUPPKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_LINENUMBER\",\"type\":\"int\"},{\"name\":\"L_QUANTITY\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_EXTENDEDPRICE\",\"type\":[\"float\",\"null\"]},{\"name\":\"L_DISCOUNT\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_TAX\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_RETURNFLAG\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_LINESTATUS\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMITDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_RECEIPTDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPINSTRUCT\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPMODE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMENT\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "inputSchema": [
+                    {
+                        "name": "Wrangler",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"long\"},{\"name\":\"L_PARTKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_SUPPKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_LINENUMBER\",\"type\":\"int\"},{\"name\":\"L_QUANTITY\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_EXTENDEDPRICE\",\"type\":[\"float\",\"null\"]},{\"name\":\"L_DISCOUNT\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_TAX\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_RETURNFLAG\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_LINESTATUS\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMITDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_RECEIPTDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPINSTRUCT\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPMODE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMENT\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "id": "BigQuery",
+                "type": "batchsink",
+                "label": "BigQuery",
+                "icon": "fa-plug",
+                "$$hashKey": "object:1141",
+                "isPluginAvailable": true,
+                "_uiPosition": {
+                    "left": "1160px",
+                    "top": "314.5px"
+                }
+            }
+        ],
+        "connections": [
+            {
+                "from": "Database",
+                "to": "Wrangler"
+            },
+            {
+                "from": "Wrangler",
+                "to": "BigQuery"
+            }
+        ],
+        "comments": [],
+        "resources": {
+            "memoryMB": "15360",
+            "virtualCores": "5"
+        },
+        "driverResources": {
+            "memoryMB": "16384",
+            "virtualCores": "8"
+        },
+        "postActions": [],
+        "properties": {
+            "system.spark.spark.executor.instances": "6"
+        },
+        "processTimingEnabled": true,
+        "stageLoggingEnabled": false,
+        "engine": "spark",
+        "schedule": "0 * * * *",
+        "maxConcurrentRuns": 1
+    }
+}

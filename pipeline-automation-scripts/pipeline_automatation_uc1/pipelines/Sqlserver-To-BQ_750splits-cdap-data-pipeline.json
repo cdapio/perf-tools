@@ -1,0 +1,277 @@
+{
+    "name": "Sqlserver-To-BQ_750splits",
+    "description": "Data Pipeline Application",
+    "artifact": {
+        "name": "cdap-data-pipeline",
+        "version": "6.2.2",
+        "scope": "SYSTEM"
+    },
+    "config": {
+        "stages": [
+            {
+                "name": "Database",
+                "plugin": {
+                    "name": "Database",
+                    "type": "batchsource",
+                    "label": "Database",
+                    "artifact": {
+                        "name": "database-plugins",
+                        "version": "2.4.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "jdbcPluginType": "jdbc",
+                        "numSplits": "750",
+                        "fetchSize": "10000",
+                        "enableAutoCommit": "false",
+                        "columnNameCase": "No change",
+                        "transactionIsolationLevel": "TRANSACTION_SERIALIZABLE",
+                        "referenceName": "sqlserver",
+                        "jdbcPluginName": "sqlserver42",
+                        "importQuery": "SELECT * FROM lineitem WHERE $CONDITIONS",
+                        "boundingQuery": "SELECT MIN(L_ORDERKEY),MAX(L_ORDERKEY) FROM lineitem",
+                        "splitBy": "L_ORDERKEY",
+                        "user": "SA",
+                        "password": "sql-server1",
+                        "schema": "{\"type\":\"record\",\"name\":\"outputSchema\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"long\"},{\"name\":\"L_PARTKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_SUPPKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_LINENUMBER\",\"type\":\"int\"},{\"name\":\"L_QUANTITY\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_EXTENDEDPRICE\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_DISCOUNT\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_TAX\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_RETURNFLAG\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_LINESTATUS\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMITDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_RECEIPTDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPINSTRUCT\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPMODE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMENT\",\"type\":[\"string\",\"null\"]}]}",
+                        "connectionString": "${connection_string}"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"type\":\"record\",\"name\":\"outputSchema\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"long\"},{\"name\":\"L_PARTKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_SUPPKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_LINENUMBER\",\"type\":\"int\"},{\"name\":\"L_QUANTITY\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_EXTENDEDPRICE\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_DISCOUNT\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_TAX\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_RETURNFLAG\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_LINESTATUS\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMITDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_RECEIPTDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPINSTRUCT\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPMODE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMENT\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "inputSchema": [],
+                "id": "Database",
+                "type": "batchsource",
+                "label": "Database",
+                "icon": "icon-database",
+                "$$hashKey": "object:917",
+                "isPluginAvailable": true,
+                "_uiPosition": {
+                    "left": "550px",
+                    "top": "242.24609375px"
+                },
+                "_backendProperties": {
+                    "schema": {
+                        "name": "schema",
+                        "description": "The schema of records output by the source. This will be used in place of whatever schema comes back from the query. This should only be used if there is a bug in your jdbc driver. For example, if a column is not correctly getting marked as nullable.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": false,
+                        "macroEscapingEnabled": false
+                    },
+                    "connectionString": {
+                        "name": "connectionString",
+                        "description": "JDBC connection string including database name.",
+                        "type": "string",
+                        "required": true,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "fetchSize": {
+                        "name": "fetchSize",
+                        "description": "The number of rows to fetch at a time per split. Larger fetch size can result in faster import, with the tradeoff of higher memory usage.",
+                        "type": "int",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "numSplits": {
+                        "name": "numSplits",
+                        "description": "The number of splits to generate. If set to one, the boundingQuery is not needed, and no $CONDITIONS string needs to be specified in the importQuery. If not specified, the execution framework will pick a value.",
+                        "type": "int",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "importQuery": {
+                        "name": "importQuery",
+                        "description": "The SELECT query to use to import data from the specified table. You can specify an arbitrary number of columns to import, or import all columns using *. The Query should contain the '$CONDITIONS' string unless numSplits is set to one. For example, 'SELECT * FROM table WHERE $CONDITIONS'. The '$CONDITIONS' stringwill be replaced by 'splitBy' field limits specified by the bounding query.",
+                        "type": "string",
+                        "required": true,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "jdbcPluginName": {
+                        "name": "jdbcPluginName",
+                        "description": "Name of the JDBC plugin to use. This is the value of the 'name' key defined in the JSON file for the JDBC plugin.",
+                        "type": "string",
+                        "required": true,
+                        "macroSupported": false,
+                        "macroEscapingEnabled": false
+                    },
+                    "connectionArguments": {
+                        "name": "connectionArguments",
+                        "description": "A list of arbitrary string tag/value pairs as connection arguments. This is a semicolon-separated list of key-value pairs, where each pair is separated by a equals '=' and specifies the key and value for the argument. For example, 'key1=value1;key2=value' specifies that the connection will be given arguments 'key1' mapped to 'value1' and the argument 'key2' mapped to 'value2'.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "transactionIsolationLevel": {
+                        "name": "transactionIsolationLevel",
+                        "description": "The transaction isolation level for queries run by this sink. Defaults to TRANSACTION_SERIALIZABLE. See java.sql.Connection#setTransactionIsolation for more details. The Phoenix jdbc driver will throw an exception if the Phoenix database does not have transactions enabled and this setting is set to true. For drivers like that, this should be set to TRANSACTION_NONE.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "columnNameCase": {
+                        "name": "columnNameCase",
+                        "description": "Sets the case of the column names returned from the query. Possible options are upper or lower. By default or for any other input, the column names are not modified and the names returned from the database are used as-is. Note that setting this property provides predictability of column name cases across different databases but might result in column name conflicts if multiple column names are the same when the case is ignored.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "patternToReplace": {
+                        "name": "patternToReplace",
+                        "description": "The pattern to replace in the field name in the table, it is typically used with the Replace With config. If Replace With is not set, the pattern will be removed in the field name.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": false,
+                        "macroEscapingEnabled": false
+                    },
+                    "password": {
+                        "name": "password",
+                        "description": "Password to use to connect to the specified database. Required for databases that need authentication. Optional for databases that do not require authentication.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "boundingQuery": {
+                        "name": "boundingQuery",
+                        "description": "Bounding Query should return the min and max of the values of the 'splitBy' field. For example, 'SELECT MIN(id),MAX(id) FROM table'. This is required unless numSplits is set to one.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "enableAutoCommit": {
+                        "name": "enableAutoCommit",
+                        "description": "Whether to enable auto commit for queries run by this source. Defaults to false. This setting should only matter if you are using a jdbc driver that does not support a false value for auto commit, or a driver that does not support the commit call. For example, the Hive jdbc driver will throw an exception whenever a commit is called. For drivers like that, this should be set to true.",
+                        "type": "boolean",
+                        "required": false,
+                        "macroSupported": false,
+                        "macroEscapingEnabled": false
+                    },
+                    "user": {
+                        "name": "user",
+                        "description": "User to use to connect to the specified database. Required for databases that need authentication. Optional for databases that do not require authentication.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "jdbcPluginType": {
+                        "name": "jdbcPluginType",
+                        "description": "Type of the JDBC plugin to use. This is the value of the 'type' key defined in the JSON file for the JDBC plugin. Defaults to 'jdbc'.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": false,
+                        "macroEscapingEnabled": false
+                    },
+                    "splitBy": {
+                        "name": "splitBy",
+                        "description": "Field Name which will be used to generate splits. This is required unless numSplits is set to one.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": true,
+                        "macroEscapingEnabled": false
+                    },
+                    "replaceWith": {
+                        "name": "replaceWith",
+                        "description": "The string that will be replaced in the field name in the table, it must be used with the Pattern To Replace config.",
+                        "type": "string",
+                        "required": false,
+                        "macroSupported": false,
+                        "macroEscapingEnabled": false
+                    },
+                    "referenceName": {
+                        "name": "referenceName",
+                        "description": "This will be used to uniquely identify this source/sink for lineage, annotating metadata, etc.",
+                        "type": "string",
+                        "required": true,
+                        "macroSupported": false,
+                        "macroEscapingEnabled": false
+                    }
+                },
+                "description": "Reads from a database table(s) using a configurable SQL query. Outputs one record for each row returned by the query.",
+                "selected": false
+            },
+            {
+                "name": "BigQuery",
+                "plugin": {
+                    "name": "BigQueryTable",
+                    "type": "batchsink",
+                    "label": "BigQuery",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.15.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "project": "auto-detect",
+                        "serviceFilePath": "auto-detect",
+                        "operation": "insert",
+                        "truncateTable": "false",
+                        "allowSchemaRelaxation": "false",
+                        "location": "US",
+                        "createPartitionedTable": "false",
+                        "partitionFilterRequired": "false",
+                        "schema": "{\"type\":\"record\",\"name\":\"outputSchema\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"long\"},{\"name\":\"L_PARTKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_SUPPKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_LINENUMBER\",\"type\":\"int\"},{\"name\":\"L_QUANTITY\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_EXTENDEDPRICE\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_DISCOUNT\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_TAX\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_RETURNFLAG\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_LINESTATUS\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMITDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_RECEIPTDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPINSTRUCT\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPMODE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMENT\",\"type\":[\"string\",\"null\"]}]}",
+                        "referenceName": "bqsink",
+                        "dataset": "sql_server_500gb",
+                        "table": "Lineitem"
+                    }
+                },
+                "outputSchema": "{\"type\":\"record\",\"name\":\"outputSchema\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"long\"},{\"name\":\"L_PARTKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_SUPPKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_LINENUMBER\",\"type\":\"int\"},{\"name\":\"L_QUANTITY\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_EXTENDEDPRICE\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_DISCOUNT\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_TAX\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_RETURNFLAG\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_LINESTATUS\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMITDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_RECEIPTDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPINSTRUCT\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPMODE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMENT\",\"type\":[\"string\",\"null\"]}]}",
+                "inputSchema": [
+                    {
+                        "name": "Database",
+                        "schema": "{\"type\":\"record\",\"name\":\"outputSchema\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"long\"},{\"name\":\"L_PARTKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_SUPPKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_LINENUMBER\",\"type\":\"int\"},{\"name\":\"L_QUANTITY\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_EXTENDEDPRICE\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_DISCOUNT\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_TAX\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_RETURNFLAG\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_LINESTATUS\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMITDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_RECEIPTDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPINSTRUCT\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPMODE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMENT\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "id": "BigQuery",
+                "type": "batchsink",
+                "label": "BigQuery",
+                "icon": "fa-plug",
+                "$$hashKey": "object:918",
+                "isPluginAvailable": true,
+                "_uiPosition": {
+                    "left": "850px",
+                    "top": "242.24609375px"
+                },
+                "selected": false
+            }
+        ],
+        "connections": [
+            {
+                "from": "Database",
+                "to": "BigQuery"
+            }
+        ],
+        "comments": [],
+        "resources": {
+            "memoryMB": "12228",
+            "virtualCores": "5"
+        },
+        "driverResources": {
+            "memoryMB": "16384",
+            "virtualCores": "8"
+        },
+        "postActions": [],
+        "properties": {
+            "system.spark.spark.executor.instances": "6"
+        },
+        "processTimingEnabled": true,
+        "stageLoggingEnabled": false,
+        "engine": "spark",
+        "schedule": "0 * * * *",
+        "maxConcurrentRuns": 1
+    }
+}

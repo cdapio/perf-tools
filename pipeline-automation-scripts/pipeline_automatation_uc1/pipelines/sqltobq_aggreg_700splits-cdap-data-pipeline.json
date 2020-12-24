@@ -1,0 +1,171 @@
+{
+    "name": "sqltobq_aggreg_700splits",
+    "description": "Data Pipeline Application",
+    "artifact": {
+        "name": "cdap-data-pipeline",
+        "version": "6.2.2",
+        "scope": "SYSTEM"
+    },
+    "config": {
+        "stages": [
+            {
+                "name": "Database",
+                "plugin": {
+                    "name": "Database",
+                    "type": "batchsource",
+                    "label": "Database",
+                    "artifact": {
+                        "name": "database-plugins",
+                        "version": "2.4.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "jdbcPluginType": "jdbc",
+                        "enableAutoCommit": "false",
+                        "columnNameCase": "No change",
+                        "transactionIsolationLevel": "TRANSACTION_SERIALIZABLE",
+                        "referenceName": "sqlserver",
+                        "jdbcPluginName": "sqlserver42",
+                        "importQuery": "SELECT * FROM lineitem WHERE $CONDITIONS",
+                        "boundingQuery": "SELECT MIN(L_ORDERKEY),MAX(L_ORDERKEY) FROM lineitem",
+                        "splitBy": "L_ORDERKEY",
+                        "user": "SA",
+                        "password": "sql-server1",
+                        "schema": "{\"type\":\"record\",\"name\":\"outputSchema\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"long\"},{\"name\":\"L_PARTKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_SUPPKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_LINENUMBER\",\"type\":\"int\"},{\"name\":\"L_QUANTITY\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_EXTENDEDPRICE\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_DISCOUNT\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_TAX\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_RETURNFLAG\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_LINESTATUS\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMITDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_RECEIPTDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPINSTRUCT\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPMODE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMENT\",\"type\":[\"string\",\"null\"]}]}",
+                        "connectionString": "${connection_string}",
+                        "fetchSize": "10000",
+                        "numSplits": "700"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"type\":\"record\",\"name\":\"outputSchema\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"long\"},{\"name\":\"L_PARTKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_SUPPKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_LINENUMBER\",\"type\":\"int\"},{\"name\":\"L_QUANTITY\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_EXTENDEDPRICE\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_DISCOUNT\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_TAX\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_RETURNFLAG\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_LINESTATUS\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMITDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_RECEIPTDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPINSTRUCT\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPMODE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMENT\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "inputSchema": [],
+                "id": "Database",
+                "type": "batchsource",
+                "label": "Database",
+                "icon": "icon-database",
+                "$$hashKey": "object:1026",
+                "isPluginAvailable": true,
+                "_uiPosition": {
+                    "left": "560px",
+                    "top": "314.5px"
+                }
+            },
+            {
+                "name": "Group By",
+                "plugin": {
+                    "name": "GroupByAggregate",
+                    "type": "batchaggregator",
+                    "label": "Group By",
+                    "artifact": {
+                        "name": "core-plugins",
+                        "version": "2.4.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "groupByFields": "L_RETURNFLAG",
+                        "aggregates": "SUM_QUANTITY:Sum(L_QUANTITY),MIN_EXTENDEDPRICE:Min(L_EXTENDEDPRICE),MAX_EXTENDEDPRICE:Max(L_EXTENDEDPRICE),AVG_DISCOUNT:Avg(L_DISCOUNT),COUNT_LINENUMBER:Count(L_LINENUMBER)"
+                    }
+                },
+                "outputSchema": [
+                    {
+                        "name": "etlSchemaBody",
+                        "schema": "{\"type\":\"record\",\"name\":\"outputSchema.typeagg\",\"fields\":[{\"name\":\"L_RETURNFLAG\",\"type\":[\"string\",\"null\"]},{\"name\":\"SUM_QUANTITY\",\"type\":[\"double\",\"null\"]},{\"name\":\"MIN_EXTENDEDPRICE\",\"type\":[\"double\",\"null\"]},{\"name\":\"MAX_EXTENDEDPRICE\",\"type\":[\"double\",\"null\"]},{\"name\":\"AVG_DISCOUNT\",\"type\":[\"double\",\"null\"]},{\"name\":\"COUNT_LINENUMBER\",\"type\":\"long\"}]}"
+                    }
+                ],
+                "inputSchema": [
+                    {
+                        "name": "Database",
+                        "schema": "{\"type\":\"record\",\"name\":\"outputSchema\",\"fields\":[{\"name\":\"L_ORDERKEY\",\"type\":\"long\"},{\"name\":\"L_PARTKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_SUPPKEY\",\"type\":[\"long\",\"null\"]},{\"name\":\"L_LINENUMBER\",\"type\":\"int\"},{\"name\":\"L_QUANTITY\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_EXTENDEDPRICE\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_DISCOUNT\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_TAX\",\"type\":[\"double\",\"null\"]},{\"name\":\"L_RETURNFLAG\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_LINESTATUS\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMITDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_RECEIPTDATE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPINSTRUCT\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_SHIPMODE\",\"type\":[\"string\",\"null\"]},{\"name\":\"L_COMMENT\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "id": "Group-By",
+                "type": "batchaggregator",
+                "label": "Group By",
+                "icon": "icon-groupbyaggregate",
+                "$$hashKey": "object:1027",
+                "isPluginAvailable": true,
+                "_uiPosition": {
+                    "left": "860px",
+                    "top": "314.5px"
+                }
+            },
+            {
+                "name": "BigQuery",
+                "plugin": {
+                    "name": "BigQueryTable",
+                    "type": "batchsink",
+                    "label": "BigQuery",
+                    "artifact": {
+                        "name": "google-cloud",
+                        "version": "0.15.2",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "project": "auto-detect",
+                        "serviceFilePath": "auto-detect",
+                        "operation": "insert",
+                        "truncateTable": "false",
+                        "allowSchemaRelaxation": "false",
+                        "location": "US",
+                        "createPartitionedTable": "false",
+                        "partitionFilterRequired": "false",
+                        "schema": "{\"type\":\"record\",\"name\":\"outputSchema.typeagg\",\"fields\":[{\"name\":\"L_RETURNFLAG\",\"type\":[\"string\",\"null\"]},{\"name\":\"SUM_QUANTITY\",\"type\":[\"double\",\"null\"]},{\"name\":\"MIN_EXTENDEDPRICE\",\"type\":[\"double\",\"null\"]},{\"name\":\"MAX_EXTENDEDPRICE\",\"type\":[\"double\",\"null\"]},{\"name\":\"AVG_DISCOUNT\",\"type\":[\"double\",\"null\"]},{\"name\":\"COUNT_LINENUMBER\",\"type\":\"long\"}]}",
+                        "referenceName": "bqsink",
+                        "dataset": "sqlsever_db",
+                        "table": "Lineitem"
+                    }
+                },
+                "outputSchema": "{\"type\":\"record\",\"name\":\"outputSchema.typeagg\",\"fields\":[{\"name\":\"L_RETURNFLAG\",\"type\":[\"string\",\"null\"]},{\"name\":\"SUM_QUANTITY\",\"type\":[\"double\",\"null\"]},{\"name\":\"MIN_EXTENDEDPRICE\",\"type\":[\"double\",\"null\"]},{\"name\":\"MAX_EXTENDEDPRICE\",\"type\":[\"double\",\"null\"]},{\"name\":\"AVG_DISCOUNT\",\"type\":[\"double\",\"null\"]},{\"name\":\"COUNT_LINENUMBER\",\"type\":\"long\"}]}",
+                "inputSchema": [
+                    {
+                        "name": "Group By",
+                        "schema": "{\"type\":\"record\",\"name\":\"outputSchema.typeagg\",\"fields\":[{\"name\":\"L_RETURNFLAG\",\"type\":[\"string\",\"null\"]},{\"name\":\"SUM_QUANTITY\",\"type\":[\"double\",\"null\"]},{\"name\":\"MIN_EXTENDEDPRICE\",\"type\":[\"double\",\"null\"]},{\"name\":\"MAX_EXTENDEDPRICE\",\"type\":[\"double\",\"null\"]},{\"name\":\"AVG_DISCOUNT\",\"type\":[\"double\",\"null\"]},{\"name\":\"COUNT_LINENUMBER\",\"type\":\"long\"}]}"
+                    }
+                ],
+                "id": "BigQuery",
+                "type": "batchsink",
+                "label": "BigQuery",
+                "icon": "fa-plug",
+                "$$hashKey": "object:1028",
+                "isPluginAvailable": true,
+                "_uiPosition": {
+                    "left": "1160px",
+                    "top": "314.5px"
+                }
+            }
+        ],
+        "connections": [
+            {
+                "from": "Database",
+                "to": "Group By"
+            },
+            {
+                "from": "Group By",
+                "to": "BigQuery"
+            }
+        ],
+        "comments": [],
+        "resources": {
+            "memoryMB": "14336",
+            "virtualCores": "5"
+        },
+        "driverResources": {
+            "memoryMB": "16384",
+            "virtualCores": "8"
+        },
+        "postActions": [],
+        "properties": {
+            "system.spark.spark.executor.instances": "6"
+        },
+        "processTimingEnabled": true,
+        "stageLoggingEnabled": false,
+        "engine": "spark",
+        "schedule": "0 * * * *",
+        "maxConcurrentRuns": 1
+    }
+}

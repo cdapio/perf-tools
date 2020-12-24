@@ -1,0 +1,52 @@
+{
+        "name": "12wn_profile",
+        "label": "12wn_profile",
+        "description": "Creates Dataproc clusters for 12wn_profile",
+        "scope": "USER",
+        "status": "ENABLED",
+        "provisioner": {
+            "name": "gcp-dataproc",
+            "properties": [
+            {
+                "name": "masterNumNodes",
+                "value": "1",
+                "isEditable": "true"
+            },
+            {
+                "name": "masterCPUs",
+                "value": "8",
+                "isEditable": "true"
+            },
+            {
+                "name": "masterMemoryMB",
+                "value": "32768",
+                "isEditable": "true"
+            },
+            {
+                "name": "masterDiskGB",
+                "value": "300",
+                "isEditable": "true"
+            },
+            {
+                "name": "workerNumNodes",
+                "value": "12",
+                "isEditable": "true"
+            },
+            {
+                "name": "workerCPUs",
+                "value": "32",
+                "isEditable": "true"
+            },
+            {
+                "name": "workerMemoryMB",
+                "value": "131072",
+                "isEditable": "true"
+            },
+            {
+                "name": "workerDiskGB",
+                "value": "300",
+                "isEditable": "true"
+            }
+            ]
+        }
+        }
