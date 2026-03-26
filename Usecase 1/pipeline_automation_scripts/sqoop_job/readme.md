@@ -12,7 +12,7 @@ sqljdbc42.jar and upload it into gcs bucket.
 * Mention gcs path of above jar files in "jar_file_uris"
 * Create GCS bucket(for target-dir) to store output data.Use gsutil command to create bucket 
 
-        $ gcloud storage buckets create gs://BUCKET_NAME
+        $gcloud storage buckets create gs://BUCKET_NAME
 
 **To submit sqoop job in dataproc cluster use following command :**
 
